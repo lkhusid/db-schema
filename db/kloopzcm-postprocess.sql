@@ -1,37 +1,39 @@
+SET SCHEMA 'kloopzcm';
+
 CREATE SEQUENCE kloopzcm.md_pk_seq
    INCREMENT 1
    START 1000;
-ALTER TABLE kloopzcm.md_pk_seq OWNER TO kloopzcm;
+ALTER TABLE kloopzcm.md_pk_seq OWNER TO :user;
 COMMENT ON SEQUENCE kloopzcm.md_pk_seq IS 'metadata pk sequenece';
 
 CREATE SEQUENCE kloopzcm.cm_pk_seq
    INCREMENT 1
    START 1000;
-ALTER TABLE kloopzcm.cm_pk_seq OWNER TO kloopzcm;
+ALTER TABLE kloopzcm.cm_pk_seq OWNER TO :user;
 COMMENT ON SEQUENCE kloopzcm.cm_pk_seq IS 'cm pk sequenece';
 
 CREATE SEQUENCE kloopzcm.ns_pk_seq
    INCREMENT 1
    START 1000;
-ALTER TABLE kloopzcm.ns_pk_seq OWNER TO kloopzcm;
+ALTER TABLE kloopzcm.ns_pk_seq OWNER TO :user;
 COMMENT ON SEQUENCE kloopzcm.ns_pk_seq IS 'ns pk sequenece';
 
 CREATE SEQUENCE kloopzcm.dj_pk_seq
    INCREMENT 1
    START 1000;
-ALTER TABLE kloopzcm.dj_pk_seq OWNER TO kloopzcm;
+ALTER TABLE kloopzcm.dj_pk_seq OWNER TO :user;
 COMMENT ON SEQUENCE kloopzcm.dj_pk_seq IS 'dj pk sequenece';
 
 CREATE SEQUENCE kloopzcm.event_pk_seq
    INCREMENT 1
    START 1000;
-ALTER TABLE kloopzcm.event_pk_seq OWNER TO kloopzcm;
+ALTER TABLE kloopzcm.event_pk_seq OWNER TO :user;
 COMMENT ON SEQUENCE kloopzcm.event_pk_seq IS 'pk sequenece for events';
 
 CREATE SEQUENCE kloopzcm.log_pk_seq
    INCREMENT 1
    START 1000;
-ALTER TABLE kloopzcm.log_pk_seq OWNER TO kloopzcm;
+ALTER TABLE kloopzcm.log_pk_seq OWNER TO :user;
 COMMENT ON SEQUENCE kloopzcm.log_pk_seq IS 'pk sequenece for logs';
 
 ALTER TABLE kloopzcm.md_classes ADD COLUMN format TEXT;
@@ -125,9 +127,12 @@ CREATE UNIQUE INDEX md_class_attr_name_idx
    ON md_class_attributes (class_id ASC NULLS LAST, attribute_name ASC NULLS LAST);
 
 CREATE INDEX cm_ops_proc_ciid_nm_created
-  ON cm_ops_procedures (ci_id , proc_name, created );
+  ON cm_ops_procedures (ci_id , created );
    
-   
+CREATE  INDEX concurrently cm_ops_procedures_ci_proc_idx
+ ON kloopzcm.cm_ops_procedures
+ ( ops_proc_id, ci_id );
+  
 insert into md_classes (class_id, class_name, short_class_name, access_level, is_namespace, description)
 values (100, 'Ci','Ci','global', false,'This is basic super class, all classes will extend this one');
 
@@ -146,6 +151,8 @@ insert into cm_ci_state (ci_state_id, state_name) values (500, 'manifest_locked'
 insert into dj_release_states (release_state_id, state_name) values (100,'open');
 insert into dj_release_states (release_state_id, state_name) values (200,'closed');
 insert into dj_release_states (release_state_id, state_name) values (300,'canceled');
+insert into dj_release_states (release_state_id, state_name) values (10,'pending');
+
 
 insert into cms_event_type (event_type_id, event_type) values (100,'insert');
 insert into cms_event_type (event_type_id, event_type) values (200,'update');
