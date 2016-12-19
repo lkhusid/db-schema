@@ -1,4 +1,15 @@
 
+CREATE TABLE kloopzcm.ns_opt_tag (
+                tag_id BIGINT NOT NULL,
+                tag VARCHAR(64) NOT NULL,
+                CONSTRAINT tag_id PRIMARY KEY (tag_id)
+);
+
+
+CREATE UNIQUE INDEX ns_opt_tag_idx
+ ON kloopzcm.ns_opt_tag
+ ( tag );
+
 CREATE TABLE kloopzcm.dj_approval_states (
                 state_id INTEGER NOT NULL,
                 state_name VARCHAR(64) NOT NULL,
@@ -145,6 +156,7 @@ CREATE INDEX dj_releases_ns_idx
 
 CREATE TABLE kloopzcm.dj_deployment (
                 deployment_id BIGINT NOT NULL,
+                flags INTEGER NOT NULL,
                 ns_id BIGINT NOT NULL,
                 release_id BIGINT NOT NULL,
                 created_by VARCHAR(200),
@@ -451,6 +463,7 @@ CREATE TABLE kloopzcm.dj_ns_opt (
                 rfc_id BIGINT NOT NULL,
                 ns_id BIGINT NOT NULL,
                 created TIMESTAMP NOT NULL,
+                tag_id BIGINT NOT NULL,
                 CONSTRAINT dj_ns_opt_pk PRIMARY KEY (rfc_id, ns_id)
 );
 
@@ -568,8 +581,8 @@ CREATE INDEX cm_ci_cl_idx
 CREATE TABLE kloopzcm.cm_ns_opt (
                 ci_id BIGINT NOT NULL,
                 ns_id BIGINT NOT NULL,
-                tag VARCHAR(64) NOT NULL,
                 created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                tag_id BIGINT NOT NULL,
                 CONSTRAINT cm_ns_opt_pk PRIMARY KEY (ci_id, ns_id)
 );
 
@@ -808,6 +821,20 @@ CREATE INDEX cm_ci_attributes_ci_idx
 CREATE INDEX cm_ci_attributes_attr_idx
  ON kloopzcm.cm_ci_attributes
  ( attribute_id );
+
+ALTER TABLE kloopzcm.cm_ns_opt ADD CONSTRAINT ns_opt_tag_cm_ns_opt_fk
+FOREIGN KEY (tag_id)
+REFERENCES kloopzcm.ns_opt_tag (tag_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE kloopzcm.dj_ns_opt ADD CONSTRAINT ns_opt_tag_dj_ns_opt_fk
+FOREIGN KEY (tag_id)
+REFERENCES kloopzcm.ns_opt_tag (tag_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
 
 ALTER TABLE kloopzcm.dj_dpmt_approvals ADD CONSTRAINT dj_dpmt_approvals_states_fk
 FOREIGN KEY (state_id)
