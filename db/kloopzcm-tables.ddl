@@ -697,6 +697,10 @@ CREATE INDEX cm_ci_relations_r_idx
  ON kloopzcm.cm_ci_relations
  ( relation_id );
 
+CREATE INDEX cm_ci_relations_r_ns_idx
+ ON kloopzcm.cm_ci_relations
+ ( relation_id, ns_id );
+
 CREATE TABLE kloopzcm.cm_ci_relation_attributes (
                 ci_rel_attribute_id BIGINT NOT NULL,
                 ci_relation_id BIGINT NOT NULL,
@@ -825,14 +829,14 @@ CREATE INDEX cm_ci_attributes_attr_idx
 ALTER TABLE kloopzcm.cm_ns_opt ADD CONSTRAINT ns_opt_tag_cm_ns_opt_fk
 FOREIGN KEY (tag_id)
 REFERENCES kloopzcm.ns_opt_tag (tag_id)
-ON DELETE NO ACTION
+ON DELETE CASCADE
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
 ALTER TABLE kloopzcm.dj_ns_opt ADD CONSTRAINT ns_opt_tag_dj_ns_opt_fk
 FOREIGN KEY (tag_id)
 REFERENCES kloopzcm.ns_opt_tag (tag_id)
-ON DELETE NO ACTION
+ON DELETE CASCADE
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
